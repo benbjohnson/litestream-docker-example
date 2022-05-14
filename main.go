@@ -53,6 +53,12 @@ func run() error {
 	fmt.Printf("listening on %s\n", addr)
 	go http.ListenAndServe(addr,
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/favicon.ico" {
+				w.WriteHeader(404)
+				fmt.Fprintf(w, "Not found")
+				return
+			}
+			
 			// Store page view.
 			if _, err := db.Exec(`INSERT INTO page_views (timestamp) VALUES (?);`, time.Now().Format(time.RFC3339)); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
